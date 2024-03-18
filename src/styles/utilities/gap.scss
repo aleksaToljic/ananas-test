@@ -1,0 +1,38 @@
+@use '../config';
+
+///
+/// The gap utility classes for each step in the spacing scale.
+/// These classes only control the --gap variable, not the gap property itself.
+///
+/// Usage:
+///
+/// <div class="l-stack u-gap--xs">
+///    <div>First child</div>
+///    <div>Second child</div>
+/// </div>
+/// 
+/// Configuration:
+///     $spacing-scale-positive-multipliers     The positive multipliers for the spacing scale.
+///     $spacing-scale-negative-multipliers     The negative multipliers for the spacing scale.
+///
+/// Block:
+///     .u-gap          The default gap size (the same as .u-gap--s).
+///
+/// Elements:
+///     <none>
+/// 
+/// Modifiers:
+///     .u-gap--{N}     N is the step in the spacing scale (e.g. xs, s, m, l, xl, 2xl etc.).
+/// 
+
+$-ns: u-gap;
+
+.#{$-ns} {
+    --gap: var(--space-s);
+
+    @each $size in config.$space-scale {
+        &--#{$size} {
+            --gap: var(--space-#{$size}) !important;
+        }
+    }
+}

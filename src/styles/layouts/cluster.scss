@@ -1,0 +1,112 @@
+@use '../config';
+
+///
+/// The Cluster Layout primitive is used to group a set of elements that differ in length and are liable to wrap.
+/// Buttons that appear together at the end of forms are ideal candidates, as well as lists of tags, keywords, or
+/// other meta information.
+///
+///                           Cluster Layout
+///   /-----------------------------------------------------------------\
+///   | +---------+ # +-------+ # +-------------+ # +-----------------+ |
+///   | |         | # |       | # |             | # |                 | |
+///   | |         | # |       | # |             | # |                 | |
+///   | |         | # |       | # |             | # |                 | |
+///   | +---------+ # +-------+ # +-------------+ # +-----------------+ |
+///   \-----------------------------------------------------------------/
+///                 ↑                    ↑
+///                Gap                Children
+///
+///                                 |
+///                            [ wraps as ]
+///                                 |
+///                                 v
+///
+///                    /---------------------------\
+///                    | +---------+ # +-------+   |
+///                    | |         | # |       |   |
+///                    | |         | # |       |   |
+///                    | |         | # |       |   |
+///                    | +---------+ # +-------+   |
+///                    | ######################### |
+///                    | +-------------+           |
+///                    | |             |           |
+///                    | |             |           |
+///                    | |             |           |
+///                    | +-------------+           |
+///                    | ######################### |
+///                    | +-----------------+       |
+///                    | |                 |       |
+///                    | |                 |       |
+///                    | |                 |       |
+///                    | +-----------------+       |
+///                    \---------------------------/
+///
+/// Configuration:
+///     $cluster-split-point        The maximum number of split points in cluster layouts. Defaults to 6.
+///
+/// Variables:
+///     --gap                       The size of padding between elements. Defaults to var(--space-s).
+///     --cluster-gap               The cluster-specific gap that overrides the --gap. Unset by default.
+///     --inline-align              The alignment of the elements in the inline direction. Defaults to flex-start.
+///     --block-align               The alignment of the elements in the block direction. Defaults to center.
+///
+/// Usage:
+///
+///     <ul class="l-cluster u-gap--xs" role="list">
+///         <li>Lorem</li>
+///         <li>Ipsum</li>
+///         <li>Dolor</li>
+///         <li>Sit</li>
+///         <li>Amet</li>
+///     </ul>
+///
+/// Block:
+///    .l-cluster
+///
+/// Elements:
+///    .l-cluster__split            The first element in the "split group".
+///    .l-cluster__split-after      The element after which the "split group" is created.
+///
+/// Modifiers:
+///    .l-cluster--split-{N}        Split after {N}th child (where {N} goes from 1 to $cluster-split-point).
+///    .l-cluster--split-last-{N}   Split before the last {N}th child (where {N} goes from 1 to $cluster-split-point).
+///
+
+$-ns: l-cluster;
+
+.#{$-ns} {
+    --gap: var(--space-s);
+    --inline-align: flex-start;
+    --block-align: center;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cluster-gap, var(--gap));
+    justify-content: var(--inline-align);
+    align-items: var(--block-align);
+
+    & > * {
+        margin-inline: 0;
+    }
+
+    &__split {
+        margin-inline-start: auto;
+    }
+
+    &__split-after {
+        margin-inline-end: auto;
+
+        & + * {
+            margin-inline-start: 0;
+        }
+    }
+
+    @for $i from 1 through config.$cluster-split-points {
+        &--split-#{$i} > :nth-child(#{$i}) {
+            margin-inline-end: auto;
+        }
+        &--split-last-#{$i} > :nth-last-child(#{$i}) {
+            margin-inline-start: auto;
+        }
+    }
+}

@@ -1,0 +1,61 @@
+///
+/// The Box Layout primitive is used to define a "box", i.e. a container for something.
+/// The only thing a Box Layout does is defining a padding and setting display to block, nothing more, nothing less.
+///
+/// You can control the size of the padding via the `--gap` variable.
+///
+///
+///             Box Layout
+///   /---------------------------\
+///   | ######################### | <-- Padding
+///   | # +-------------------+ # |
+///   | # |                   | # |
+///   | # |                   | # | <== Content
+///   | # |                   | # |
+///   | # +-------------------+ # |
+///   | ######################### | <-- Padding
+///   \---------------------------/
+///      ↑                      ↑
+///   Padding                Padding
+///
+/// Configuration:
+///    <none>
+///
+/// Variables:
+///     --gap                       The size of padding. Defaults to var(--space-s).
+///     --box-gap                   The box-specific gap that overrides the --gap. Unset by default.
+///
+/// Usage:
+///
+///     <p class="l-box u-gap--xl">
+///         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+///     </p>
+///
+/// Block:
+///    .l-box
+///
+/// Elements:
+///    <none>
+///
+/// Modifiers:
+///    <none>
+///
+
+$-ns: l-box;
+
+.#{$-ns} {
+  --gap: var(--space-s);
+  --color: var(--color-white);
+  --border-thin: 0;
+  --text-color: var(--color-white);
+
+  display: block;
+  padding: var(--box-gap, var(--gap));
+  background-color: var(--box-bg);
+  border: var(--border-thin) solid var(--color);
+  color: var(--text-color);
+  border-bottom-left-radius: var(--radius-bottom-left, var(--radius));
+  border-bottom-right-radius: var(--radius-bottom-right, var(--radius));
+  border-top-left-radius: var(--radius-top-left, var(--radius));
+  border-top-right-radius: var(--radius-top-right, var(--radius));
+}

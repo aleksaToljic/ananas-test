@@ -1,0 +1,101 @@
+///
+/// The Cover Layout primitive is used to define a container that covers the entire viewport.
+/// It has one "principal" child (i.e. the main content) that should always gravitate towards the center.
+/// In addition, it can have one "top" element (e.g. a header) and/or one "bottom" element (e.g. a footer).
+///
+///
+///                            Cover Layout
+///     /-------------------------------------------------------\
+///     | +---------------------------------------------------+ |
+///     | |                                                   | |
+///     | |                                                   | |  <== Top
+///     | |                                                   | |
+///     | +---------------------------------------------------+ |
+///     | ##################################################### |  <== Gap
+///     | +---------------------------------------------------+ |
+///     | |                                                   | |
+///     | |                                                   | |
+///     | |                                                   | |
+///     | |                                                   | |  <== Principal
+///     | |                                                   | |
+///     | |                                                   | |
+///     | +---------------------------------------------------+ |
+///     | ##################################################### |
+///     | +---------------------------------------------------+ |
+///     | |                                                   | |
+///     | |                                                   | |  <== Bottom
+///     | |                                                   | |
+///     | +---------------------------------------------------+ |
+///     \-------------------------------------------------------/
+///
+///
+/// Configuration:
+///   <none>
+///
+/// Variables:
+///     --min-gap                   The size of the minimum gap between the principal and top/bottom elements.
+///                                 Defaults to 0.
+///     --min-block-size            The minimum block size of the container, before it grows to accommodate its content.
+///                                 Defaults to 100vb.
+///
+/// Usage:
+///
+///    <div class="l-cover">
+///        <header>Header</header>
+///        <main>Main content</main>  <!-- the <main> is considered a default l-cover__principal element -->
+///        <footer>Footer</footer>
+///    </div>
+///
+/// Block:
+///     .l-cover
+///
+/// Elements:
+///     .l-cover__principal         The main content of the cover. As a specialization, the <main> element is considered
+///                                 a default .l-cover__principal element in case that no other element is marked as such.
+///
+/// Modifiers:
+///     .l-cover--stretch           Make the principal stretched, instead of it adopting its natural block size.
+///
+///
+
+$-ns: l-cover;
+
+.#{$-ns} {
+    --min-block-size: 100vh;
+    --min-gap: 0;
+
+    display: flex;
+    flex-direction: column;
+    min-block-size: var(--min-block-size);
+
+    // specialization: when nesting l-cover elements, the innermost one should grow to fill its parent
+    .#{$-ns} {
+        --min-block-size: 100%;
+        
+        flex-grow: 1;
+    }
+
+    > * {
+        margin-block: var(--min-gap);
+    }
+
+    &:not(.#{$-ns}--stretch) > .#{$-ns}__principal,
+    &:not(.#{$-ns}--stretch):not(:has(> .#{$-ns}__principal)) > main {
+        margin-block: auto;
+    }
+
+    &.#{$-ns}--stretch > .#{$-ns}__principal,
+    &.#{$-ns}--stretch:not(:has(> .#{$-ns}__principal)) > main {
+        flex-grow: 1;
+    }
+
+    &:has(> .#{$-ns}__principal) > :first-child:not(.#{$-ns}__principal),
+    &:not(:has(> .#{$-ns}__principal)) > :first-child:not(main) {
+        margin-block-start: 0;
+    }
+
+    &:has(> .#{$-ns}__principal) > :last-child:not(.#{$-ns}__principal),
+    &:not(:has(> .#{$-ns}__principal)) > :last-child:not(main) {
+        margin-block-end: 0;
+    }
+}

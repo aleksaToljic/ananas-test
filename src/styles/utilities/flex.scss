@@ -1,0 +1,48 @@
+@use 'sass:list';
+@use '../config';
+@use '../common/util';
+
+///
+/// The flex utility classes for controlling flex-grow and flex-shrink properties.
+///
+/// Usage:
+///
+/// <div class="l-flex">
+///    <div class="u-grow--2">First child</div>
+///    <div>Second child</div>
+/// </div>
+///
+/// Configuration:
+///     $grid-columns   The number of columns in the fluid grid which controls the 
+///                     number of flex-grow and flex-shrink factors.
+///                     The factors are all the divisors of this number, plus 0.
+///
+/// Block:
+///     .u-grow         The same as .u-grow--1.
+///     .u-shrink       The same as .u-shrink--1.
+///
+/// Elements:
+///     <none>
+///
+/// Modifiers:
+///     .u-grow--{N}    N is the flex-grow factor.
+///     .u-shrink--{N}  N is the flex-shrink factor.
+///
+
+.u-grow {
+    flex-grow: 1;
+    @each $factor in list.append(util.divisors(config.$grid-columns), 0) {
+        &--#{$factor} {
+            flex-grow: $factor;
+        }
+    }
+}
+
+.u-shrink {
+    flex-shrink: 1;
+    @each $factor in list.append(util.divisors(config.$grid-columns), 0) {
+        &--#{$factor} {
+            flex-shrink: $factor;
+        }
+    }
+}

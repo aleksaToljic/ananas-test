@@ -1,0 +1,145 @@
+@use '../config';
+
+///
+/// The Stack Layout primitive injects block margin between its child elements.
+/// Children are always in block order, start to end.
+///
+/// A split point can be set which will push towards the block end all children
+/// after that point.
+/// Split point can be defined via --split-X and --split-last-X modifiers, or
+/// via __split element (which defines the first element in the split group).
+///
+/// By default, Stack Layout affects only its direct children's margins, but with
+/// the --recursive modifier this can be changed so that all descendants are affected.
+///
+///
+///             Stack Layout
+///   /-----------------------------\
+///   | +-------------------------+ |
+///   | |                         | | <================+
+///   | |                         | |                  |
+///   | +-------------------------+ |                  |
+///   | ##########################  | <==== Gap        |
+///   | +-------------------------+ |                  |
+///   | |                         | |                  |
+///   | |                         | | <================+
+///   | |                         | |                  |
+///   | +-------------------------+ |                  |===== Stack Children
+///   |            -----            |                  |
+///   |              ¦              |                  |
+///   |            Split            |                  |
+///   |              ¦              |                  |
+///   |            -----            |                  |
+///   | +-------------------------+ |                  |   <====+
+///   | |                         | | <================+        |  Split group
+///   | |                         | |                           | (split-last-1)
+///   | +-------------------------+ |                      <====+
+///   \-----------------------------/
+///
+/// Configuration:
+///     $stack-split-point          The maximum number of split points in stack layouts. Defaults to 6.
+///
+/// Variables:
+///     --gap                       The gap between children. Defaults to var(--space-s).
+///     --stack-gap                 The stack-specific gap that overrides the --gap. Unset by default.
+///
+/// Usage:
+///
+///     <div class="l-stack">
+///         <div>First child</div>
+///         <div>Second child</div>
+///     </div>
+///
+/// Block:
+///    .l-stack
+///
+/// Elements:
+///    .l-stack__split              The first element in the "split group".
+///    .l-stack__split-after        The element after which the "split group" is created.
+///
+/// Modifiers:
+///    .l-stack--center             Centers the children, instead of stretching them.
+///    .l-stack--recursive          Whether non-direct descendants will receive margins as well.
+///    .l-stack--split-{N}          Split after {N}th child (where {N} goes from 1 to $stack-split-point).
+///    .l-stack--split-last-{N}     Split before the last {N}th child (where {N} goes from 1 to $stack-split-point).
+///
+/// Notes:
+///
+/// More than one split group can be defined, for example:
+///
+///     <div class="l-stack l-stack--split-2 l-stack--split-last-1" style="--gap: var(--space-l)">
+///         <div>First</div>
+///         <div>Second</div>
+///         <div>Third</div>
+///         <div>Fourth</div>
+///         <div>Fifth</div>
+///     </div>
+///
+/// Will render as:
+///
+///     +-----------+
+///     |   First   |
+///     |   Second  |
+///     |           |
+///     |           |
+///     |   Third   |
+///     |   Fourth  |
+///     |           |
+///     |           |
+///     |   Fifth   |
+///     +-----------+
+///
+
+$-ns: l-stack;
+
+.#{$-ns} {
+    --gap: var(--space-s);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    &--center {
+        align-items: center;
+    }
+
+    // TODO: maybe we want this behavior always and not depend on the use of --split- modifier or __split element?
+    :is(
+            &[class*='#{$-ns}--split-'],
+            &:has(.#{$-ns}__split),
+            &:has(.#{$-ns}__split-after)
+        ):only-child {
+        block-size: 100%;
+    }
+
+    & > *,
+    &--recursive * {
+        margin-block: 0;
+    }
+
+    > * + *,
+    &--recursive * + * {
+        margin-block-start: var(--stack-gap, var(--gap));
+    }
+
+    &__split {
+        margin-block-start: auto;
+    }
+
+    &__split-after {
+        margin-block-end: auto;
+
+        & + * {
+            margin-block-start: 0;
+        }
+    }
+
+    @for $i from 1 through config.$stack-split-points {
+        &--split-#{$i} > :nth-child(#{$i}) {
+            margin-block-end: auto;
+        }
+        &--split-last-#{$i} > :nth-last-child(#{$i}) {
+            margin-block-start: auto;
+        }
+    }
+}

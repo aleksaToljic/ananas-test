@@ -1,0 +1,4 @@
+@use "../common/extensions";
+@use "post-row";
+@use "comment-card";
+@include extensions.apply("modules");

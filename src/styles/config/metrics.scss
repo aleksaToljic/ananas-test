@@ -1,0 +1,117 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+
+@use '../common/scale';
+
+// The default width of a line of text, in characters.
+$measure: 60ch !default;
+
+// Fluid type scale configuration:
+$type-scale-min-width: 318 !default; // minimum viewport width (in pixels)
+$type-scale-max-width: 1110 !default; // maximum viewport width (in pixels)
+$type-scale-min-font-size: 16 !default; // minimum font size (in pixels)
+$type-scale-max-font-size: 24 !default; // maximum font size (in pixels)
+$type-scale-min-type-scale: minor-third !default; // minimum type scale
+$type-scale-max-type-scale: major-third !default; // maximum type scale
+$type-scale-relative-to: viewport !default; // use viewport- or container-relative units
+$type-scale-positive-steps: 5 !default; // number of positive steps in the scale
+$type-scale-negative-steps: 2 !default; // number of negative steps in the scale
+
+// Fluid spacing scale configuration:
+$spacing-scale-min-width: $type-scale-min-width !default; // minimum viewport width (in pixels)
+$spacing-scale-max-width: $type-scale-max-width !default; // maximum viewport width (in pixels)
+$spacing-scale-min-spacing: 18 !default; // minimum base (i.e. "S" t-shirt size) spacing (in pixels)
+$spacing-scale-max-spacing: 20 !default; // maximum base (i.e. "S" t-shirt size) spacing (in pixels)
+$spacing-scale-relative-to: viewport !default; // use viewport- or container-relative units
+$spacing-scale-positive-multipliers: (
+    1.5,
+    2,
+    3,
+    4,
+    6
+) !default; // set of positive multipliers in the scale
+$spacing-scale-negative-multipliers: (
+    0.75,
+    0.5,
+    0.25
+) !default; // set of negative multipliers in the scale
+
+$grid-min-width: $spacing-scale-min-width !default; // minimum viewport width (in pixels)
+$grid-max-width: $spacing-scale-max-width !default; // maximum viewport width (in pixels)
+$grid-gutter-space: s-m !default; // the name of a spacing scale span
+$grid-max-column-width-space: xl !default; // the name of a spacing scale step
+$grid-columns: 12 !default; // number of columns in the grid
+
+$-space-scale: scale.calculate-space-scale(
+    (
+        'minWidth': $spacing-scale-min-width,
+        'maxWidth': $spacing-scale-max-width,
+        'minSize': $spacing-scale-min-spacing,
+        'maxSize': $spacing-scale-max-spacing,
+        'positiveSteps': $spacing-scale-positive-multipliers,
+        'negativeSteps': $spacing-scale-negative-multipliers,
+        'relativeTo': $spacing-scale-relative-to,
+        'gridColumns': $grid-columns,
+        'gridMaxColumnWidth': $grid-max-column-width-space,
+        'gridGutterSpan': $grid-gutter-space,
+    )
+);
+
+$space-scale: (none); // the list off all available t-shirt sizes in the spacing scale
+
+@each $size in map.get($-space-scale, 'sizes') {
+    $space-scale: list.append($space-scale, map.get($size, 'label'));
+}
+
+$-grid: map.get($-space-scale, 'grid');
+
+:root {
+    // The default measure (width of a line of text, in characters).
+    --measure: #{$measure};
+
+    @each $scale
+        in scale.calculate-type-scale(
+            (
+                'minWidth': $type-scale-min-width,
+                'maxWidth': $type-scale-max-width,
+                'minFontSize': $type-scale-min-font-size,
+                'maxFontSize': $type-scale-max-font-size,
+                'minTypeScale': $type-scale-min-type-scale,
+                'maxTypeScale': $type-scale-max-type-scale,
+                'positiveSteps': $type-scale-positive-steps,
+                'negativeSteps': $type-scale-negative-steps,
+                'relativeTo': $type-scale-relative-to,
+            )
+        )
+    {
+        // Fluid type scale steps (--step-0, --step-1, ...)
+        --step-#{map.get($scale, 'step')}: #{map.get($scale, 'clamp')};
+    }
+
+    --space-none: 0;
+    
+    @each $size in map.get($-space-scale, 'sizes') {
+        // Fluid pixel space scale (--space-s, --space-m, --space-l, ...)
+        --space-#{map.get($size, 'label')}: #{map.get($size, 'clampPx')};
+
+        // Fluid rem space scale (--space-s-rem, --space-m-rem, ---space-l-rem, ...)
+        --space-#{map.get($size, 'label')}-rem: #{map.get($size, 'clamp')};
+    }
+    @each $span in map.get($-space-scale, 'spans') {
+        // Fluid pixel space scale spans (--space-s-m, --space-m-xl, ...)
+        --space-#{map.get($span, 'label')}: #{map.get($span, 'clampPx')};
+        
+        // Fluid rem space scale spans (--space-s-m-rem, --space-m-xl-rem, ...)
+        --space-#{map.get($span, 'label')}-rem: #{map.get($span, 'clamp')};
+    }
+
+    // Fluid grid columns
+    --grid-columns: #{$grid-columns};
+    
+    // Maximum width of the fluid grid
+    --grid-max-inline-size: #{map.get($-grid, 'maxWidth')};
+    
+    // The size of the fluid grid gaps
+    --grid-gutter: #{map.get($-grid, 'gutterClamp')};
+}

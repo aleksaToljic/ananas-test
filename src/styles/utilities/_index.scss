@@ -1,0 +1,7 @@
+@use './align';
+@use './flex';
+@use './gap';
+@use './size';
+
+@use '../common/extensions';
+@include extensions.apply('utilities');

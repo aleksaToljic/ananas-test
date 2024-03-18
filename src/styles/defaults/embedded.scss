@@ -1,0 +1,50 @@
+:where(img, svg, video, canvas, audio, iframe, embed, object, select, textarea) {
+    // Restrict sizing to the page width in all browsers
+    display: block;
+    block-size: auto;
+    max-inline-size: 100%;
+}
+
+:where(select, textarea) {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+:where(audio:not([controls])) {
+    // Hide <audio /> without controls
+    display: none;
+}
+
+:where(iframe) {
+    // Remove the border on iframes in all browsers
+    border-style: none;
+}
+
+:where(svg) {
+    // Hide the SVG overflow in all browsers
+    overflow: hidden;
+}
+
+:where(svg:not([fill])) {
+    // Change the SVG fill color to match the text color in all browsers
+    fill: currentColor;
+}
+
+// Make sure responsive images are rendered consistently
+:where(picture) {
+    display: contents;
+}
+
+:where(source) {
+    display: none;
+}
+
+:where(img, svg, video, canvas) {
+    // Maintain intrinsic aspect ratio when using max-inline-size
+    block-size: auto;
+}
+
+:where(a img) {
+    // Remove border on linked images in all browsers
+    border-style: none;
+}

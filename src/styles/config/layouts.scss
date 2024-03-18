@@ -1,0 +1,7 @@
+@use './metrics';
+
+$split-points: 6 !default; // number of split points in layouts supporting them
+$stack-split-points: $split-points !default; // number of split points in stack layouts
+$cluster-split-points: $split-points !default; // number of split points in cluster layouts
+
+$flex-max-limit: metrics.$grid-columns !default; // maximum number of "columns" in flex layouts

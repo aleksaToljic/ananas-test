@@ -1,0 +1,24 @@
+:where(table) {
+    // Make table size consistent in all browsers
+    inline-size: fit-content;
+
+    // Collapse border spacing in all browsers
+    border-collapse: collapse;
+
+    // Correct table border color in Chrome, Edge, and Safari
+    border-color: currentColor;
+
+    // Remove text indentation from table contents in Chrome, Edge, and Safari
+    text-indent: 0;
+}
+
+:where(td, th) {
+    // Make table cells consistent in all browsers
+    vertical-align: top;
+    padding: 0;
+}
+
+:where(caption, th) {
+    // Align the table caption in all browsers consistently
+    text-align: start;
+}

@@ -1,0 +1,14 @@
+///
+/// The Fluid Grid Layout primitive creates a fluid grid with the configurable number of columns.
+/// 
+/// @see https://utopia.fyi/grid/calculator/
+/// 
+
+$-ns: l-fluid-grid;
+
+.#{$-ns} {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), 1fr);
+    gap: var(--grid-gutter);
+    max-inline-size: var(--grid-max-inline-size);
+}

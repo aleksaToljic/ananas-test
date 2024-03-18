@@ -1,0 +1,13 @@
+$color-white: #fafafa !default;
+$color-black: #010409 !default;
+
+$color-scrollbar-thumb: $color-white !default;
+$color-scrollbar-track: $color-black !default;
+
+:root {
+    --color-white: #{$color-white};
+    --color-black: #{$color-black};
+
+    --color-scrollbar-thumb: #{$color-scrollbar-thumb};
+    --color-scrollbar-track: #{$color-scrollbar-track};
+}

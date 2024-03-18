@@ -1,0 +1,68 @@
+@use '../config';
+
+///
+/// The align utility classes for controlling the inline and block alignment of elements.
+/// These classes only control the --inline-align and --inline-block variables, not the alignment properties itself.
+///
+/// Usage:
+///
+/// <div class="l-cluster u-align-inline--center">
+///    <div>First child</div>
+///    <div>Second child</div>
+/// </div>
+///
+/// Configuration:
+///     <none>
+///
+/// Block:
+///     .u-align                The default value for --inline-align variable (flex-start).
+///     .u-align-block          The default value for --block-align variable (center).
+///
+/// Elements:
+///     <none>
+///
+/// Modifiers:
+///     .u-align--{X}           X is the inline alignment value:
+///                             start, center, end, stretch, flex-start, flex-end,
+///                             space-between, space-around, space-evenly
+///
+///     .u-align-block--{Y}     Y is the block alignment value:
+///                             start, center, end, stretch, flex-start, flex-end,
+///                             self-start, self-end, baseline
+///
+
+$-ns: u-align;
+
+.#{$-ns} {
+    --inline-align: flex-start;
+
+    &-block {
+        --block-align: center;
+    }
+
+    @each $alignment
+        in (
+            start,
+            center,
+            end,
+            stretch,
+            flex-start,
+            flex-end,
+            space-between,
+            space-around,
+            space-evenly
+        )
+    {
+        &--#{$alignment} {
+            --inline-align: #{$alignment} !important;
+        }
+    }
+
+    @each $alignment
+        in (start, center, end, stretch, flex-start, flex-end, self-start, self-end, baseline)
+    {
+        &-block--#{$alignment} {
+            --block-align: #{$alignment} !important;
+        }
+    }
+}

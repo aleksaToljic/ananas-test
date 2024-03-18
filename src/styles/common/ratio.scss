@@ -1,0 +1,68 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
+
+$-ratios: (
+    square: list.slash(1, 1),
+    landscape: list.slash(16, 9),
+    portrait: list.slash(10, 13),
+    wide: list.slash(7, 3),
+    ultrawide: list.slash(18, 5),
+    golden: list.slash(1.618, 1),
+);
+
+///
+/// Returns a list of ratio names.
+/// 
+@function names() {
+    @return map.keys($-ratios);
+}
+
+///
+/// Get ratio by name.
+/// 
+@function by-name($args...) {
+    $ratio: list.nth($args, 1);
+    @if list.length($args) == 2 {
+        $ratio: list.slash($args...);
+    } @else if meta.type-of($ratio) == 'string' {
+        @if map.has-key($-ratios, $ratio) {
+            @return map.get($-ratios, $ratio);
+        } @else {
+            $wh: str.split($ratio, ':');
+            @if list.length($wh) == 2 {
+                $ratio: list.slash($wh...);
+            } @else {
+                @error 'Unknown ratio: #{$ratio}';
+            }
+        }
+    }
+    @return $ratio;
+}
+
+/// 
+/// Sets the aspect-ratio of an element with a fallback for older browsers.
+/// 
+@mixin aspect-ratio($args...) {
+    $ratio: by-name($args...);
+    
+    aspect-ratio: $ratio;
+    
+    @supports not (aspect-ratio: 1 / 1) {
+        $width: list.nth($ratio, 1);
+        $height: if(list.length($ratio) > 1, list.nth($ratio, 2), 1);
+
+        &::before {
+            float: left;
+            padding-top: calc(100% * #{$height} / #{$width});
+            content: '';
+        }
+        
+        &::after {
+            display: block;
+            content: '';
+            clear: both;
+        }
+    }
+}

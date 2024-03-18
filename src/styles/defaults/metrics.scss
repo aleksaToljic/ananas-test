@@ -1,0 +1,24 @@
+* {
+    // Set the default maximum width of a line of text
+    max-inline-size: var(--measure, 60ch);
+}
+
+:where(html, body, div, header, nav, main, footer, section) {
+    // Disable the maximum width for container elements
+    max-inline-size: none;
+}
+
+:where(body) {
+    // Make body fill the entire initial viewport containing block
+    min-block-size: 100svb;
+}
+
+:where(textarea:not([rows])) {
+    // Default textarea elements to approximately 8 rows of text
+    min-block-size: 8ex;
+}
+
+:where(:target) {
+    // Add have extra scroll margin to all anchored elements
+    scroll-margin-block: 5ex;
+}

@@ -1,0 +1,49 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sass:meta';
+@use './util';
+
+@function -is-less($a, $b) {
+    @return util.compare($a, $b) < 0;
+}
+
+@function -is-greater($a, $b) {
+    @return util.compare($a, $b) > 0;
+}
+
+$ascending: meta.get-function('-is-less');
+$descending: meta.get-function('-is-greater');
+
+///
+/// Sorts a list using an optional comparator function (that defaults to "less than" comparison).
+///
+@function list($list, $comparator: $ascending) {
+    $length: list.length($list);
+    
+    @if $length <= 1 {
+        @return $list;
+    }
+
+    $left: ();
+    $equal: ();
+    $right: ();
+    $separator: list.separator($list);
+
+    $pivot: list.nth($list, math.random($length));
+
+    @each $item in $list {
+        @if $item == $pivot {
+            $equal: list.append($equal, $item, $separator);
+        } @else if meta.call($comparator, $item, $pivot) {
+            $left: list.append($left, $item, $separator);
+        } @else {
+            $right: list.append($right, $item, $separator);
+        }
+    }
+
+    @return join(
+        join(list($left, $comparator), $equal, $separator),
+        list($right, $comparator),
+        $separator
+    );
+}

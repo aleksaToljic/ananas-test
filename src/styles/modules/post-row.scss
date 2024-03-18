@@ -1,0 +1,13 @@
+.m-post-row {
+  --card-bg: #161b22;
+  background: var(--card-bg);
+  transition: 0.25s cubic-bezier(0.42, 0, 0.58, 1);
+  cursor: pointer;
+
+  // used in l-box
+  --radius: 10px;
+
+  &:hover {
+    --card-bg: #0d1117;
+  }
+}

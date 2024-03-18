@@ -1,0 +1,67 @@
+///
+/// The Grid Layout primitive creates a flexible layout that allows you to create a grid of items
+/// that will automatically adjust to the available space. The minimum item inline size, after which
+/// the number of grid columns will reduce is configurable via --min-item-size variable.
+///
+///
+///                                  Grid Layout
+///     /---------------------------------------------------------------------\
+///     | +---------+ # +---------+ # +---------+ # +---------+ # +---------+ |
+///     | |         | # |         | # |         | # |         | # |         | |
+///     | |         | # |         | # |         | # |         | # |         | |  <- Children
+///     | |         | # |         | # |         | # |         | # |         | |
+///     | +---------+ # +---------+ # +---------+ # +---------+ # +---------+ |
+///     | ################################################################### |  <- Gap
+///     | +---------+ # +---------+ # +---------+ # +---------+ # +---------+ |
+///     | |         | # |         | # |         | # |         | # |         | |
+///     | |         | # |         | # |         | # |         | # |         | |
+///     | |         | # |         | # |         | # |         | # |         | |
+///     | +---------+ # +---------+ # +---------+ # +---------+ # +---------+ |
+///     | ################################################################### |
+///     | +---------+ # +---------+ # +---------+                             |
+///     | |         | # |         | # |         |                             |
+///     | |         | # |         | # |         |                             |
+///     | |         | # |         | # |         |                             |
+///     | +---------+ # +---------+ # +---------+                             |
+///     \---------------------------------------------------------------------/
+///                   ↑                    ↑
+///                  Gap                Children
+///
+/// Configuration:
+///     <none>
+///
+/// Variables:
+///     --gap                   The size of padding between elements. Defaults to var(--space-s).
+///     --grid-gap              The grid-specific gap that overrides the --gap. Unset by default.
+///     --min-item-size         The minimum inline size of the grid item. Defaults to calc(var(--measure) / 2).
+///     --max-item-size         The maximum inline size of the grid item. Defaults to 100%.
+///
+/// Usage:
+///    <div class="l-grid u-gap--xs">
+///      <div>First child</div>
+///      <div>Second child</div>
+///      <div>Third child</div>
+///      <div>Fourth child</div>
+///   </div>
+///
+/// Block:
+///   .l-grid                  The grid layout container.
+///
+/// Elements:
+///     <none>
+///
+/// Modifiers:
+///     <none>
+///
+
+$-ns: l-grid;
+
+.#{$-ns} {
+    --gap: var(--space-s);
+    --min-item-size: calc(var(--measure) / 2);
+    --max-item-size: 100%;
+
+    display: grid;
+    gap: var(--grid-gap, var(--gap));
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--min-item-size), var(--max-item-size)), 1fr));
+}

@@ -1,0 +1,96 @@
+@use "../config";
+
+///
+/// The Flex Layout primitive switches a Flexbox context between a horizontal and a vertical layout at a given,
+/// container-based breakpoint. That is, if the breakpoint is 30rem, the layout will switch to a vertical
+/// configuration when the parent element is less than 30rem wide.
+///
+///
+///                           Flex Layout
+///   /------------------------------------------------------\
+///   | +----------+ # +--------------------+ # +----------+ |
+///   | |          | # |                    | # |          | |
+///   | |          | # |                    | # |          | |
+///   | |          | # |                    | # |          | |
+///   | +----------+ # +--------------------+ # +----------+ |
+///   \------------------------------------------------------/
+///                  ↑                                ↑
+///                 Gap          |                Children
+///                              |
+///                     [  at --threshold ]
+///                     [  switches into  ]
+///                              |
+///                              v
+///
+///                /---------------------------\
+///                | +-----------------------+ |
+///                | |                       | |
+///                | |                       | |  <- Children
+///                | |                       | |
+///                | +-----------------------+ |
+///                | ######################### |  <- Gap
+///                | +-----------------------+ |
+///                | |                       | |
+///                | |                       | |
+///                | |                       | |
+///                | +-----------------------+ |
+///                | ######################### |
+///                | +-----------------------+ |
+///                | |                       | |
+///                | |                       | |
+///                | |                       | |
+///                | +-----------------------+ |
+///                \---------------------------/
+///
+/// Configuration:
+///    $flex-max-limit              The maximum number of .l-flex--limit-{N} modifiers to generate.
+///                                 Defaults to the number of columns of the fluid grid (i.e., $grid-columns).
+///
+/// Variables:
+///     --gap                       The size of padding between elements. Defaults to var(--space-s).
+///     --flex-gap                  The flex-specific gap that overrides the --gap. Unset by default.
+///     --threshold                 The maximum size of the flex container before the layout switches
+///                                 to a vertical configuration. Defaults to var(--measure).
+///
+/// Usage:
+///
+///     <ul class="l-flex l-flex--limit-3 u-gap--xs" role="list">
+///         <li>Lorem</li>
+///         <li>Ipsum</li>
+///         <li>Dolor</li>
+///         <li>Sit</li>
+///         <li>Amet</li>
+///     </ul>
+///
+/// Block:
+///    .l-flex
+///
+/// Elements:
+///    <none>
+///
+/// Modifiers:
+///    .l-flex--limit-{N}           The maximum number of children to display in a horizontal layout.
+///
+
+$-ns: l-flex;
+
+.#{$-ns} {
+  --gap: var(--space-s);
+  --threshold: var(--measure);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--flex-gap, var(--gap));
+
+  > * {
+    flex-grow: 1;
+    flex-basis: calc((var(--threshold) - 100%) * 999);
+  }
+
+  @for $i from 1 through config.$flex-max-limit {
+    &--limit-#{$i} > :nth-last-child(n + #{$i + 1}),
+    &--limit-#{$i} > :nth-last-child(n + #{$i + 1}) ~ * {
+      flex-basis: 100%;
+    }
+  }
+}

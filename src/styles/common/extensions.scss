@@ -1,0 +1,21 @@
+@use 'sass:map';
+@use 'sass:meta';
+@use '../config/extensions';
+
+@mixin apply($group-name) {
+    @if map.has-key(extensions.$extend, $group-name) {
+        $extensions: map.get(extensions.$extend, $group-name);
+        @if meta.type-of($extensions) != list {
+            $extensions: ($extensions);
+        }
+        @each $extension in $extensions {
+            $url: $extension;
+            $with: null;
+            @if meta.type-of($extension) == map {
+                $url: map.get($extension, 'url');
+                $with: map.get($extension, 'with');
+            }
+            @include meta.load-css('../../themes/' + extensions.$theme + '/' + $url, $with);
+        }
+    }
+}

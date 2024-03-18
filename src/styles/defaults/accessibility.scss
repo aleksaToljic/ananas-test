@@ -1,0 +1,34 @@
+:where([aria-busy='true' i]) {
+    // Change the cursor on busy elements in all browsers
+    cursor: progress;
+}
+
+:where([aria-disabled='true' i], [disabled]) {
+    // Change the cursor on disabled, not-editable, or otherwise inoperable elements in all browsers
+    cursor: not-allowed;
+}
+
+// Change the display on visually hidden accessible elements in all browsers
+:where([aria-hidden='false' i][hidden]) {
+    display: initial;
+}
+
+:where([aria-hidden='false' i][hidden]:not(:focus)) {
+    clip: rect(0, 0, 0, 0);
+    position: absolute;
+}
+
+// Remove all animations and transitions when motion is reduced
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-delay: -1ms !important;
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        background-attachment: initial !important;
+        scroll-behavior: auto !important;
+        transition-delay: 0s !important;
+        transition-duration: 0s !important;
+    }
+}

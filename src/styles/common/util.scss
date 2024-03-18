@@ -1,0 +1,233 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:meta';
+@use 'sass:string';
+
+///
+/// Returns an empty map.
+///
+@function empty-map() {
+    // prettier-ignore
+    @return map.remove((_: _), _);
+}
+
+///
+/// Returns the value of a key in a map, or a default value if the key is not found.
+///
+@function get($map, $key, $default: null) {
+    @if map.has-key($map, $key) {
+        $value: map.get($map, $key);
+        @if $value {
+            @return $value;
+        }
+    }
+    @return $default;
+}
+
+///
+/// Returns the first map in a list that has a key with a specific value.
+///
+@function find-by-key($list, $key, $value) {
+    @each $map in $list {
+        @if map.has-key($map, $key) and map.get($map, $key) == $value {
+            @return $map;
+        }
+    }
+    @return null;
+}
+
+///
+/// Rounds a number to a specific number of decimal places.
+///
+@function round-to($value, $precision: 0) {
+    @return math.div(math.round($value * math.pow(10, $precision)), math.pow(10, $precision));
+}
+
+///
+/// Returns the divisors of a number.
+///
+@function divisors($n) {
+    $result: ();
+    @for $i from 1 through $n {
+        @if $n % $i == 0 {
+            $result: list.append($result, $i);
+        }
+    }
+    @return $result;
+}
+
+// prettier-ignore
+$-ascii-table: (
+    ' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',',
+    '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    '{', '|', '}', '~'
+);
+
+@function -compare-numbers($a, $b) {
+    @return if($a < $b, -1, if($a > $b, 1, 0));
+}
+
+///
+/// Compares two values and returns -1 if the first value is less than the second,
+/// 1 if the first value is greater than the second, or 0 if the values are equal.
+///
+@function compare($a, $b) {
+    $a-type: meta.type-of($a);
+    $b-type: meta.type-of($b);
+
+    @if $a-type != $b-type {
+        @error 'Cannot compare values of different types: "#{$a-type}" and "#{$b-type}"';
+    }
+
+    @if $a-type == 'number' {
+        @return -compare-numbers($a, $b);
+    }
+
+    @if $a-type == 'list' {
+        @if list.length($a) != list.length($b) {
+            @return if(list.length($a) < list.length($b), -1, 1);
+        }
+        @for $i from 1 through list.length($a) {
+            $result: compare(list.nth($a, $i), list.nth($b, $i));
+            @if $result != 0 {
+                @return $result;
+            }
+        }
+        @return 0;
+    }
+
+    @if $a-type == 'map' {
+        $a-keys: map.keys($a);
+        $b-keys: map.keys($b);
+        @if list.length($a-keys) != list.length($b-keys) {
+            @return if(list.length($a-keys) < list.length($b-keys), -1, 1);
+        }
+        @each $key in $a-keys {
+            @if not map.has-key($b, $key) {
+                @return 1;
+            }
+            $result: compare(map.get($a, $key), map.get($b, $key));
+            @if $result != 0 {
+                @return $result;
+            }
+        }
+        @return 0;
+    }
+
+    $a: string.to-lower-case(#{$a});
+    $b: string.to-lower-case(#{$b});
+
+    $a-length: string.length($a);
+    $b-length: string.length($b);
+
+    @for $i from 1 through math.min($a-length, $b-length) {
+        $ch-a: string.slice($a, $i, $i);
+        $ch-b: string.slice($b, $i, $i);
+
+        @if $ch-a and $ch-b and $ch-a != $ch-b {
+            @return -compare-numbers(
+                list.index($-ascii-table, $ch-a) or 0,
+                list.index($-ascii-table, $ch-b) or 0
+            );
+        }
+    }
+
+    @return -compare-numbers($a-length, $b-length);
+}
+
+///
+/// Returns the number without its unit.
+///
+@function strip-unit($number) {
+    @if meta.type-of($number) == 'number' and not math.is-unitless($number) {
+        @return math.div($number, ($number * 0 + 1));
+    }
+    @return $number;
+}
+
+///
+/// Converts a value to a number.
+///
+@function to-number($value, $strict: true) {
+    $result: parse-number($value);
+    @if not $result {
+        @return if($strict, null, 0);
+    }
+    @return if($strict and list.nth($result, 2) != '', null, list.nth($result, 1));
+}
+
+$-digits: ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+
+///
+/// Parses a number and returns a list with the unitless number and its unit.
+/// If the value is not a number, nor a numeric string, returns null.
+///
+@function parse-number($value, $allowUnitOnly: false) {
+    @if meta.type-of($value) == 'number' {
+        @return (strip-unit($value), math.unit($value));
+    }
+
+    $value: #{$value};
+    $sign: 1;
+    $number: 0;
+
+    @if string.length($value) == 0 or $value == '-' {
+        @return null;
+    }
+
+    @if string.slice($value, 1, 1) == '-' {
+        $sign: -1;
+        $value: string.slice($value, 2);
+    }
+
+    $is-valid: false;
+
+    @for $i from 1 through string.length($value) {
+        $index: list.index($-digits, string.slice($value, $i, $i));
+        @if not $index {
+            @return if(
+                not $is-valid,
+                if($allowUnitOnly, (1, $value), null),
+                ($number * $sign, string.slice($value, $i))
+            );
+        }
+        $is-valid: true;
+        $number: $number * 10 + ($index - 1);
+    }
+
+    @return ($number * $sign, '');
+}
+
+$-t-shirt-sizes: (
+    'xs': -2,
+    's': 0,
+    'm': 2,
+    'l': 4,
+    'xl': 8,
+);
+
+///
+/// Parses a t-shirt size (e.g. "2xl") and returns a map with the following shape:
+///
+/// (
+///     multiplier: 2,
+///     unit: "xl",
+///     normalizedValue: 6000
+/// )
+///
+@function parse-t-shirt-size($t-shirt) {
+    $result: parse-number(string.to-lower-case(#{$t-shirt}), $allowUnitOnly: true);
+    @if not $result or not map.has-key($-t-shirt-sizes, list.nth($result, 2)) {
+        @return null;
+    }
+    @return (
+        multiplier: list.nth($result, 1),
+        unit: list.nth($result, 2),
+        normalizedValue: list.nth($result, 1) * map.get($-t-shirt-sizes, list.nth($result, 2)) *
+            1000
+    );
+}

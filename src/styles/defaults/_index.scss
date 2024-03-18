@@ -1,0 +1,12 @@
+@use 'accessibility';
+@use 'backgrounds';
+@use 'box-model';
+@use 'embedded';
+@use 'forms';
+@use 'interactive';
+@use 'metrics';
+@use 'table';
+@use 'typography';
+
+@use '../common/extensions';
+@include extensions.apply('defaults');

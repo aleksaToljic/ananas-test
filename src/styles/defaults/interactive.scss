@@ -1,0 +1,46 @@
+:where(:root) {
+    // Use the default cursor in all browsers
+    cursor: default;
+
+    // Opt-in to the smooth scrolling behavior in all browsers
+    scroll-behavior: smooth;
+}
+
+:where(dialog) {
+    // Add the correct <dialog> styles in all browsers
+    background-color: white;
+    border: solid;
+    color: black;
+    block-size: -moz-fit-content;
+    block-size: fit-content;
+    inset-inline-start: 0;
+    margin: auto;
+    padding: 1em;
+    position: absolute;
+    inset-inline-end: 0;
+    inline-size: -moz-fit-content;
+    inline-size: fit-content;
+}
+
+:where(dialog:not([open])) {
+    display: none;
+}
+
+:where(details > summary:first-of-type) {
+    // Add the correct display in Safari
+    display: list-item;
+}
+
+:where(
+        label[for],
+        a[href],
+        button,
+        [type='button' i],
+        [type='submit' i],
+        [type='reset' i],
+        [role='button' i],
+        [tabindex]:not([tabindex='-1'])
+    ) {
+    // Make the cursor on interactive elements consistent in all browsers
+    cursor: pointer;
+}

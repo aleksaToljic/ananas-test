@@ -1,0 +1,7 @@
+@forward 'extensions';
+@forward 'colors';
+@forward 'metrics';
+@forward 'layouts';
+
+@use '../common/extensions';
+@include extensions.apply('config');

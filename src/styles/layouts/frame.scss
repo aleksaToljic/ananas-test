@@ -1,0 +1,65 @@
+///
+/// The Frame Layout primitive maintains a fixed aspect ratio, it is ideal for
+/// cropping media (images and videos) to a desired aspect ratio.
+///
+///
+///                 Frame Layout
+///     /----------------------------------\
+///     | +------------------------------+ |
+///     | |                              | |
+///     | |                              | |
+///     | |                              | |
+///     | |                              | |
+///     | |                              | |
+///     | |        --ratio: 1 / 1        | |
+///     | |                              | |
+///     | |                              | |
+///     | |                              | |
+///     | |                              | |
+///     | |                              | |
+///     | +------------------------------+ |
+///     \----------------------------------/
+///
+/// Configuration:
+///     <none>
+///
+/// Variables:
+///     --ratio                 The aspect ratio to maintain. Defaults to 16 / 9.
+///
+/// Usage:
+///    <div class="l-frame" style="--ratio: 3 / 2">
+///      <img src="..." alt="An image in 3:2 ratio" />
+///   </div>
+///
+/// Block:
+///   .l-frame                  The frame layout container.
+///
+/// Elements:
+///   .l-frame__principal       The element of contain to the given aspect ratio.
+///                             As a specialization, <img> and <video> elements are considered
+///                             the default .l-frame__principal element in case that no other
+///                             element is marked as such.
+///
+/// Modifiers:
+///     <none>
+///
+
+$-ns: l-frame;
+
+.#{$-ns} {
+    --ratio: 16 / 9;
+
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:not(:has(.#{$-ns}__principal)) > :is(img, video),
+    &__principal,
+    > :only-child {
+        inline-size: 100%;
+        block-size: 100%;
+        object-fit: cover;
+    }
+}

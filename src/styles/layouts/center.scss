@@ -1,0 +1,62 @@
+///
+/// The Center Layout primitive is used to center itself and optionally its content horizontally.
+///
+///                          Center Layout
+///                /------------------------------\
+///                | #    +----------------+    # |
+///                | #    |                |    # |
+///          |==>  | #    |                |    # |  <==|
+///                | #    |                |    # |
+///                | #    +----------------+    # |
+///                \------------------------------/
+///                  ↑             ↑            ↑
+///                 Gap         Content        Gap
+///
+/// Configuration:
+///    <none>
+///
+/// Variables:
+///     --max-size                  The maximum width of the center layout. Defaults to var(--measure).
+///     --gap                       The size of inline padding. Defaults to 0.
+///     --center-gap                The center-specific gap that overrides the --gap. Unset by default.
+///
+/// Usage:
+///
+///     <div class="l-center l-center--intrinsic">
+///         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+///     </div>
+///
+/// Block:
+///    .l-center
+///
+/// Elements:
+///    <none>
+///
+/// Modifiers:
+///    .l-center--text              Centers the text inside the box as well.
+///    .l-center--intrinsic         Centers children narrower than the max value.
+///
+
+$-ns: l-center;
+
+.#{$-ns} {
+    --gap: 0;
+    --max-size: var(--measure);
+    --center-gap: var(--gap);
+
+    box-sizing: content-box;
+    margin-inline: auto;
+    max-inline-size: var(--max-size);
+    padding-inline-start: var(--center-gap, var(--gap));
+    padding-inline-end: var(--center-gap, var(--gap));
+
+    &--text {
+        text-align: center;
+    }
+
+    &--intrinsic {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}

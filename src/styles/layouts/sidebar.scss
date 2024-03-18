@@ -1,0 +1,84 @@
+@use 'sass:list';
+@use '../config';
+
+///
+/// The Sidebar Layout primitive is used to define a "sidebar", i.e. a container for a content and a sidebar.
+/// The content will take up the remaining space, while the sidebar will take up a fixed size.
+///
+///
+///                            Sidebar Layout
+///     /-------------------------------------------------------\
+///     | +------------+ # +----------------------------------+ |
+///     | |            | # |                                  | |
+///     | |            | # |                                  | |
+///     | |            | # |                                  | |
+///     | |            | # |                                  | |
+///     | +------------+ # +----------------------------------+ |
+///     \-------------------------------------------------------/
+///             ↑        ↑                   ↑
+///          Sidebar    Gap               Content
+///
+///
+/// Configuration:
+///   <none>
+///
+/// Variables:
+///     --gap                       The size of padding between the content and the sidebar. Defaults to 0.
+///     --sidebar-gap               The sidebar-specific gap that overrides the --gap. Unset by default.
+///     --size                      The size of the sidebar. Defaults to the largest step of the space scale (3xl by default).
+///     --min-content-size          The minimum inline size of the content, in percentages. Defaults to 50%.
+///
+/// Usage:
+///
+///    <figure class="l-sidebar">
+///        <img src="..." />
+///        <figcaption>Image description</figcaption>
+///    </figure>
+///
+/// Block:
+///     .l-sidebar
+///
+/// Elements:
+///     <none>
+///
+/// Modifiers:
+///     .l-sidebar--intrinsic       Make the sidebar size default to its content's inline size.
+///     .l-sidebar--no-stretch      Make the children adopt their natural block size, instead of stretching them.
+///     .l-sidebar--reverse         Reverses the order of the children (i.e. the first child is
+///                                 the content and the second is the sidebar).
+///
+///
+
+$-ns: l-sidebar;
+
+.#{$-ns} {
+    --size: var(--space-#{list.nth(config.$space-scale, -1)});
+    --min-content-size: 50%;
+    --gap: 0;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sidebar-gap, var(--gap));
+
+    &--no-stretch {
+        align-items: flex-start;
+    }
+
+    &:not(.#{$-ns}--reverse) > :first-child,
+    &.#{$-ns}--reverse > :last-child {
+        flex-basis: initial;
+        flex-grow: 1;
+    }
+
+    &:not(.#{$-ns}--intrinsic):not(.#{$-ns}--reverse) > :first-child,
+    &:not(.#{$-ns}--intrinsic).#{$-ns}--reverse > :last-child {
+        flex-basis: var(--size);
+    }
+
+    &:not(.#{$-ns}--reverse) > :last-child,
+    &.#{$-ns}--reverse > :first-child {
+        flex-basis: 0;
+        flex-grow: 999;
+        min-inline-size: var(--min-content-size);
+    }
+}

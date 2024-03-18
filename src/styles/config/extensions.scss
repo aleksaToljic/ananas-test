@@ -1,0 +1,10 @@
+@use 'sass:map';
+@use 'sass:list';
+@use '../common/util';
+
+$theme: null !default;
+$extend: util.empty-map() !default;
+
+@if not $theme and list.length(map.keys($extend)) > 0 {
+    @error 'Theme name not defined. Please configure the theme name using the $theme variable.';
+}

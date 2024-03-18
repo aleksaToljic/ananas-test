@@ -1,0 +1,97 @@
+///
+/// The Reel Layout primitive can be used to layout a series of elements in the inline flow direction.
+/// When the elements overflow the container, the Reel Layout will provide a scrollbar to allow the user
+/// to scroll through the elements.
+///
+///
+///                              Reel Layout
+///     /----------------------------------------------------------\
+///     | +------------+ # +------------+ # +------------+ # +-----|
+///     | |            | # |            | # |            | # |     |
+///     | |            | # |            | # |            | # |     |
+///     | |            | # |            | # |            | # |     |
+///     | |            | # |            | # |            | # |     |
+///     | +------------+ # +------------+ # +------------+ # +-----|
+///     \----------------------------------------------------------/
+/// 
+///
+/// Configuration:
+///     $color-scrollbar-thumb      The color of the scrollbar thumb.
+///     $color-scrollbar-track      The color of the scrollbar track.
+///
+/// Variables:
+///     --color-scrollbar-thumb     The color of the scrollbar thumb. Set to $color-scrollbar-thumb by default.
+///     --color-scrollbar-track     The color of the scrollbar track. Set to $color-scrollbar-track by default.
+///     --gap                       The gap between the elements. Defaults to var(--space-s).
+///     --reel-gap                  The reel-specific gap that overrides the --gap. Unset by default.
+///
+/// Usage:
+///    <div class="l-reel" role="list">
+///      <img src="..." role="listitem" />
+///      <img src="..." role="listitem" />
+///      <img src="..." role="listitem" />
+///      <img src="..." role="listitem" />
+///      <img src="..." role="listitem" />
+///      <img src="..." role="listitem" />
+///   </div>
+///
+/// Block:
+///     .l-reel                      The reel layout container.
+///
+/// Elements:
+///     <none>
+///
+/// Modifiers:
+///     .is-overflowing              Set via JavaScript when scrollWidth > clientWidth.
+///                                  Adds the space to the container to accommodate the scrollbar.
+///                                  This is progressive enhancement.
+///
+
+$-ns: l-reel;
+
+.#{$-ns} {
+    --gap: var(--space-s);
+
+    display: flex;
+    block-size: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+
+    > * {
+        flex: 0 0 auto;
+    }
+
+    > img {
+        block-size: 100%;
+        flex-basis: auto;
+        width: auto;
+    }
+
+    > * + * {
+        margin-inline-start: var(--reel-gap, var(--gap));
+    }
+
+    &.is-overflowing {
+        padding-block-end: var(--reel-gap, var(--gap));
+    }
+
+    &::-webkit-scrollbar {
+        block-size: 1rem;
+
+        &-track {
+            background-color: var(--color-scrollbar-track);
+        }
+        
+        &-thumb {
+            background-color: var(--color-scrollbar-thumb);
+            background-image: linear-gradient(
+                var(--color-scrollbar-thumb) 0,
+                var(--color-scrollbar-thumb) 0.25rem,
+                var(--color-scrollbar-track) 0.25rem,
+                var(--color-scrollbar-track) 0.75rem,
+                var(--color-scrollbar-thumb) 0.75rem
+            );
+        }
+    }
+}

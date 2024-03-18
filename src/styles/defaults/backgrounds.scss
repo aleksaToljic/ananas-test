@@ -1,0 +1,13 @@
+* {
+    &,
+    &::before,
+    &::after {
+        // Do not repeat backgrounds by default
+        background-repeat: no-repeat;
+    }
+}
+
+:where(button, input, select, optgroup, textarea) {
+    // Remove default backgrounds in all browsers
+    background: transparent;
+}

@@ -1,0 +1,38 @@
+@use '../config';
+
+///
+/// The size utility classes for each step in the spacing scale.
+/// These classes only control the --size variable.
+///
+/// Usage:
+///
+/// <div class="l-sidebar u-size--3xl">
+///    <div>First child</div>
+///    <div>Second child</div>
+/// </div>
+///
+/// Configuration:
+///     $spacing-scale-positive-multipliers     The positive multipliers for the spacing scale.
+///     $spacing-scale-negative-multipliers     The negative multipliers for the spacing scale.
+///
+/// Block:
+///     .u-size         The default value for --size (the same as .u-size--s).
+///
+/// Elements:
+///     <none>
+///
+/// Modifiers:
+///     .u-size--{N}    N is the step in the spacing scale (e.g. xs, s, m, l, xl, 2xl etc.).
+///
+
+$-ns: u-size;
+
+.#{$-ns} {
+    --size: var(--space-s);
+
+    @each $size in config.$space-scale {
+        &--#{$size} {
+            --size: var(--space-#{$size}) !important;
+        }
+    }
+}

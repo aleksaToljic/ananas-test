@@ -1,0 +1,84 @@
+:where(button, input, select, optgroup, textarea) {
+    // Make the appearance consistent across browsers
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0 0.5em;
+    margin: 0;
+
+    // Make borders consistent in all browsers
+    border: 1px solid currentColor;
+    border-radius: 0;
+
+    // Make type styles consistent with the parent in all browsers
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    text-transform: inherit;
+    vertical-align: middle;
+}
+
+:where(button, [type='button' i], [type='reset' i], [type='submit' i]) {
+    // Make buttons possible to restyle in Safari
+    -webkit-appearance: button;
+    appearance: button;
+}
+
+:where(fieldset) {
+    // Change the inconsistent appearance in all browsers
+    border: 1px solid currentColor;
+}
+
+:where(progress) {
+    // Fix vertical alignment in Chrome, Edge, and Firefox
+    vertical-align: baseline;
+}
+
+:where(textarea) {
+    // Remove the margin in Firefox and Safari
+    margin: 0;
+
+    // Change the resize direction in all browsers
+    resize: vertical;
+}
+
+:where([type='checkbox'], [type='radio']) {
+    // Correct the box-sizing of radio and checkboxes in all browsers
+    box-sizing: border-box;
+
+    // Remove padding in Firefox
+    padding: 0;
+}
+
+:where([type='search' i]) {
+    // Correct the odd appearance in Chrome, Edge, and Safari
+    -webkit-appearance: textfield;
+    appearance: textfield;
+
+    // Correct the outline style in Safari
+    outline-offset: -2px;
+}
+
+// Correct the cursor style of increment and decrement buttons in Safari
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+    block-size: auto;
+}
+
+::-webkit-input-placeholder {
+    // Correct the text style of placeholders in Chrome, Edge, and Safari
+    color: inherit;
+    opacity: 0.54;
+}
+
+::-webkit-search-decoration {
+    // Remove the inner padding in Chrome, Edge, and Safari on macOS.
+    -webkit-appearance: none;
+}
+
+::-webkit-file-upload-button {
+    // Make upload buttons possible to restyle in Safari
+    -webkit-appearance: button;
+
+    // Make the font consistent with other buttons in Safari
+    font: inherit;
+}

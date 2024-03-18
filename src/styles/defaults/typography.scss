@@ -1,0 +1,117 @@
+@use 'sass:math';
+@use '../config/metrics';
+
+:where(:root) {
+    font-family: sans-serif;
+
+    // WCAG requirement: Line height (line spacing) to at least 1.5 times the font size
+    line-height: 1.5;
+
+    // Prevents overflow of text outside of the containing element
+    overflow-wrap: break-word;
+
+    // Remove the tap highlight color in iOS
+    -webkit-tap-highlight-color: transparent;
+
+    // Turn-off subpixel antialiasing in macOS
+    -webkit-font-smoothing: antialiased;
+
+    // Prevents mobile browsers from increasing the default font-size when you switch from portrait to landscape:
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+}
+
+// The default 1.5 line-height can be too jarring with bigger font sizes, and can mess with alignment of interactive elements
+:where(h1, h2, h3, h4, h5, h6, button, input, label) {
+    line-height: 1.125;
+}
+
+:where(caption, figcaption, label, legend) {
+    line-height: 1.333;
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
+    // Make headings bold and wrap text nicer
+    font-weight: bold;
+    text-wrap: balance;
+}
+
+:where(p, h1, h2, h3, h4, h5, h6) {
+    // Use automatic hyphenation to improve text readability
+    hyphens: auto;
+}
+
+:where(input, button, textarea, select, address) {
+    // Make sure form elements are rendered consistently
+    font: inherit;
+}
+
+// Generate a fluid type scale
+@for $h from 1 through 6 {
+    :where(h#{$h}) {
+        font-size: var(--step-#{math.max(0, metrics.$type-scale-positive-steps - $h + 1)});
+    }
+}
+
+:where(small) {
+    font-size: if(metrics.$type-scale-negative-steps > 0, --step--1, 80%);
+}
+
+:where(body, h1, h2, h3, h4, h5, h6, p, figure, pre, address, iframe, form, blockquote, dl, dd) {
+    // Remove default margins
+    margin: 0;
+}
+
+:where(ul[role='list'], ol[role='list']) {
+    // Remove list styles on ul, ol elements with a list role which signifies that it will be styles as a "ui list"
+    list-style: none;
+    padding: 0;
+}
+
+// Make "monospace elements" consistent across browsers
+:where(pre, code, kbd, samp) {
+    // stylelint-disable-next-line font-family-no-duplicate-names
+    font-family: monospace, monospace;
+    font-size: 1em;
+    overflow: auto;
+}
+
+:where(pre) {
+    white-space: pre-wrap;
+}
+
+:where(b, strong, dt, th) {
+    // Make "bold" elements consistent across browsers
+    font-weight: bolder;
+}
+
+:where(abbr[title]) {
+    // Fix text decoration of <abbr> in Safari
+    text-decoration: underline;
+    text-decoration: underline dotted;
+}
+
+:where(hr) {
+    // Make <hr> consistent across browsers
+    color: inherit;
+    block-size: 0;
+    border-style: solid;
+    border-width: 1px 0 0;
+    overflow: visible;
+}
+
+// Prevent <sub> and <sup> elements from affecting the line height in all browsers
+:where(sub, sup) {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+:where(sub) {
+    inset-block-end: -0.25em;
+}
+
+:where(sup) {
+    inset-block-start: -0.5em;
+}

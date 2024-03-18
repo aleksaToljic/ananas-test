@@ -1,0 +1,227 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:meta';
+@use 'sass:string';
+@use '../utopia/utopia' as utopia;
+@use '../common/sort';
+@use '../common/util';
+
+$-scales: (
+    minor-second: 1.067,
+    major-second: 1.125,
+    minor-third: 1.2,
+    major-third: 1.25,
+    perfect-fourth: 1.333,
+    augmented-fourth: 1.414,
+    perfect-fifth: 1.5,
+    minor-sixth: 1.6,
+    golden: 1.618,
+    major-sixth: 1.667,
+    minor-seventh: 1.778,
+    major-seventh: 1.875,
+    octave: 2,
+);
+
+///
+/// Returns a list of scale names.
+///
+@function names() {
+    @return map.keys($-scales);
+}
+
+///
+/// Convert a scale name to a multiplier.
+///
+@function to-multiplier($scale) {
+    @if map.has-key($-scales, $scale) {
+        @return map.get($-scales, $scale);
+    } @else if meta.type-of($scale) == 'number' {
+        @return $scale;
+    } @else {
+        @error 'Invalid scale: #{$scale}';
+    }
+}
+
+///
+///  Returns a list of fluid type scale steps represented as a map with the following shape:
+///  (
+///      "step": 0,
+///      "minFontSize": 18,
+///      "maxFontSize": 20,
+///      "clamp": clamp(...),
+///  )
+///
+@function calculate-type-scale($params) {
+    @return utopia.calculateTypeScale(
+        map.merge(
+            $params,
+            (
+                'minTypeScale': to-multiplier(map.get($params, 'minTypeScale')),
+                'maxTypeScale': to-multiplier(map.get($params, 'maxTypeScale')),
+            )
+        )
+    );
+}
+
+///
+/// The helper function to check if one span is smaller than the other by their t-shirt size labels
+/// used to sort list of t-shirt size spans.
+///
+@function -is-span-smaller($a, $b) {
+    $a-labels: string.split(map.get($a, 'label'), '-');
+    $b-labels: string.split(map.get($b, 'label'), '-');
+
+    $a-from: map.get(util.parse-t-shirt-size(list.nth($a-labels, 1)), 'normalizedValue');
+    $a-to: map.get(util.parse-t-shirt-size(list.nth($a-labels, 2)), 'normalizedValue');
+
+    $b-from: map.get(util.parse-t-shirt-size(list.nth($b-labels, 1)), 'normalizedValue');
+    $b-to: map.get(util.parse-t-shirt-size(list.nth($b-labels, 2)), 'normalizedValue');
+
+    @return $a-from < $b-from or $a-to < $b-to;
+}
+
+$-by-t-shirt-size: meta.get-function('-is-span-smaller');
+
+///
+/// Returns elements of a fluid spacing scale as a map with the following shape:
+/// (
+///   "sizes": (),
+///   "spans": ()
+///   "grid": ()
+/// )
+///
+/// Where each "sizes" element is a map with the following shape:
+/// (
+///   "label": "s",
+///   "minSize": 18,
+///   "maxSize": 20,
+///   "clamp": clamp(...)
+///   "clampPx": clamp(...)
+/// )
+///
+/// Each "spans" element is a map with the following shape:
+/// (
+///   "label": "s-m",
+///   "minSize": 18,
+///   "maxSize": 30,
+///   "clamp": clamp(...)
+///   "clampPx": clamp(...)
+/// )
+///
+/// And "grid" is a map with the following shape:
+/// (
+///   "columns": 12,
+///   "maxWidth": 69.375rem,
+///   "gutterClamp": clamp(...),
+/// )
+///
+@function calculate-space-scale($params) {
+    @if list.length(map.get($params, 'positiveSteps')) < 3 {
+        @error 'The spacing scale must have at least three positive multipliers.';
+    }
+
+    $grid-columns: util.get($params, 'gridColumns', 12);
+    $grid-max-column-width: util.get($params, 'gridMaxColumnWidth', 'xl');
+    $grid-gutter-span: util.get($params, 'gridGutterSpan', 's-m');
+
+    $custom-sizes: (
+        // the check for positiveSteps length ensures "m", "l" and "xl" are always available:
+        's-l',
+        's-xl',
+        'm-xl'
+    );
+
+    @if not list.index($custom-sizes, $grid-gutter-span) {
+        $custom-sizes: list.append($custom-sizes, $grid-gutter-span);
+    }
+
+    $scale: utopia.calculateSpaceScale(
+        map.merge(
+            map.remove($params, 'gridColumns', 'gridMaxColumnWidth', 'gridGutterSpan'),
+            (
+                'positiveSteps': sort.list(map.get($params, 'positiveSteps')),
+                'negativeSteps': sort.list(map.get($params, 'negativeSteps'), sort.$descending),
+                'customSizes': $custom-sizes,
+            )
+        )
+    );
+
+    $sizes: map.get($scale, 'sizes');
+    $spans: ();
+
+    @each $key in ('oneUpPairs', 'customPairs') {
+        @each $pair in map.get($scale, $key) {
+            $labels: string.split(map.get($pair, 'label'), '-');
+            $from: util.find-by-key($sizes, 'label', list.nth($labels, 1));
+            $to: util.find-by-key($sizes, 'label', list.nth($labels, 2));
+
+            @if not $from {
+                @error 'Invalid size label: #{list.nth($labels, 1)}';
+            }
+            @if not $to {
+                @error 'Invalid size label: #{list.nth($labels, 2)}';
+            }
+
+            @if not util.find-by-key($spans, 'label', map.get($pair, 'label')) {
+                $spans: list.append(
+                    $spans,
+                    map.merge(
+                        $pair,
+                        (
+                            'minSize': map.get($from, 'minSize'),
+                            'maxSize': map.get($to, 'maxSize'),
+                        )
+                    )
+                );
+            }
+        }
+    }
+
+    $spans: sort.list($spans, $-by-t-shirt-size);
+
+    $gutter-span-sizes: string.split($grid-gutter-span, '-');
+    $gutter-from: util.find-by-key($sizes, 'label', list.nth($gutter-span-sizes, 1));
+    $gutter-to: util.find-by-key($sizes, 'label', list.nth($gutter-span-sizes, 2));
+
+    $total-gaps: $grid-columns + 1;
+
+    $grid-min-container-width: map.get($params, 'minWidth');
+    $grid-min-gutter-width: map.get($gutter-from, 'minSize');
+    $grid-min-column-width: math.div(
+        $grid-min-container-width - $grid-min-gutter-width * $total-gaps,
+        $grid-columns
+    );
+
+    @if math.floor($grid-min-column-width) != $grid-min-column-width {
+        @warn 'The minimum column width does not divide evenly into the container width. ' +
+        'Suggestion: set the minWidth to #{
+            $total-gaps * $grid-min-gutter-width + $grid-columns * math.floor($grid-min-column-width)
+        }.';
+    }
+
+    $grid-max-container-width: map.get($params, 'maxWidth');
+    $grid-max-gutter-width: map.get($gutter-to, 'maxSize');
+    $grid-max-column-width: map.get(
+        util.find-by-key($sizes, 'label', $grid-max-column-width),
+        'maxSize'
+    );
+
+    $grid-max-width: $grid-max-gutter-width * $total-gaps + $grid-columns * $grid-max-column-width;
+
+    @if $grid-max-container-width != $grid-max-width {
+        @warn 'The maximum container width is set to #{$grid-max-container-width}, ' +
+        'but the grid has the maximum size of #{$grid-max-width}. ' +
+        'Suggestion: set the maxWidth to #{$grid-max-width}.';
+    }
+
+    @return (
+        'sizes': $sizes,
+        'spans': $spans,
+        'grid': (
+            'columns': $grid-columns,
+            'maxWidth': util.round-to(math.div($grid-max-width, 16), 2) * 1rem,
+            'gutterClamp': map.get(util.find-by-key($spans, 'label', $grid-gutter-span), 'clamp'),
+        )
+    );
+}
