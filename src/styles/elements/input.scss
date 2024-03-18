@@ -1,0 +1,15 @@
+.e-input {
+  border-color: #30363d;
+  background: #0d1117;
+  text-align: left;
+  color: #fff;
+  border-radius: 6px;
+  padding: 5px 5px 5px 20px;
+  min-width: 100%;
+  font-size: 14px;
+  box-sizing: border-box;
+
+  &:focus-visible {
+    outline-style: solid;
+  }
+}

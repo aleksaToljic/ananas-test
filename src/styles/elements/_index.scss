@@ -1,2 +1,3 @@
 @use '../common/extensions';
+@use "input";
 @include extensions.apply('elements');

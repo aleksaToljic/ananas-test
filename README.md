@@ -19,6 +19,9 @@ Layout tool is inspired by [Every-Layout](https://every-layout.dev/) and [Utopia
 - Added just two simple unit tests
 - Added some simple automation for rendering the routes, it will render the routes based on the structure of the `pages` folder, then `<Router/>` component is using that generated info to render the routes.
 - Since the task was to have propsMessage setuped from one location, I used `React.Context` via `HelloFromContainer.tsx` since I didn't have any Context in this app, so I was just showing how would I use Context via two functions I added `createContainer()` and `useContainer()`, small functions that are copied from `unstated-next`
+- **_Posts route should show a list of posts and associated comments. Every post should have a user's name associated._**
+  - The above quote about the feature request is not completed. On Posts page there are only posts, on Post page, there is post and comments associated, but no user's name associated.
+- What I also wanted to do is add some github actions, for deployment and for linting
 
 ##### Folder structure
 
@@ -31,3 +34,22 @@ Layout tool is inspired by [Every-Layout](https://every-layout.dev/) and [Utopia
 - [styles](src%2Fstyles) (styles where mostly we have this lib I'm working on, only "modules" folder is custom (that I had to write now))
 - [types](src%2Ftypes) (some place for our types)
 - [util](src%2Futil) (some place for our util, like `constants`)
+
+## Setup the project
+
+There is not much difference from create-react-app.
+App was tested with these versions:
+
+- Node: v18
+- npm: v9
+- `npm install && npm dev`
+
+There are few additional libs that were added:
+
+```json
+    "react-router-dom": "6.22.3",
+    "axios": "1.6.7",
+    "match-sorter": "6.3.4" //for filtering the posts
+```
+
+Support for `jest` and `testing-library`, `scss` support, `glob` for `routes.cjs` script, and "prettier"

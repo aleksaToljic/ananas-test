@@ -12,6 +12,7 @@ type PostRowProps = PostsResponse & HelloFrom;
 export const PostRow = (props: PostRowProps) => {
   const navigate = useNavigate();
 
+
   useEffect(() => {
     logger(props.propsMessage + PostRow.name);
   }, [props.propsMessage]);
